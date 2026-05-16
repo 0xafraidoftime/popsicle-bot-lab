@@ -6,7 +6,7 @@
 
 An open prototype for Chess.com's 3rd 2026 AI focus area — mapping a player's historical PGN data to a personality vector, then encoding that vector into a Stockfish-driven bot spec.
 
-Built by **Ankita Pal** aka [@popsicle_guy](https://www.chess.com/member/popsicle_guy), as part of an application for the Senior ML Engineer role at Chess.com.
+Built by **Ankita Pal** aka [@popsicle_guy](https://www.chess.com/member/popsicle_guy)
 
 ---
 

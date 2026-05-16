@@ -10,7 +10,7 @@ Built by **Ankita Pal** aka [@popsicle_guy](https://www.chess.com/member/popsicl
 
 ---
 
-## How it works
+## How it all works (not that you care but maybe you do hehe)
 
 ```
 chess.com /pub/player/{user}/games    PGN file

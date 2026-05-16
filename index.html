@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>popsicle-bot-lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand"><span class="caret">&gt;_</span> popsicle<span class="accent">-bot</span>-lab</div>
+  <div class="nav-links">
+    <a href="#demo">DEMO</a>
+    <a href="#methodology">METHODOLOGY</a>
+    <a href="#about">ABOUT</a>
+    <a href="https://github.com/0xafraidoftime" target="_blank" class="nav-gh">⑂ GITHUB</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="scanline"></div>
+  <div class="hero-tag">// PROTOTYPE &nbsp;&nbsp;&nbsp; V0.1 · OPEN-SOURCE</div>
+  <h1 class="hero-title">
+    PGN &rarr; personality<br/>
+    fingerprint &rarr;<br/>
+    <span class="hero-italic">a bot that <em>actually plays<br/>like you.</em></span>
+  </h1>
+  <p class="hero-sub">
+    An open prototype for <strong>Chess.com's 3rd 2026 AI focus area</strong> — mapping a
+    player's historical PGN data to a personality vector, then encoding
+    that vector into a Stockfish-driven bot spec.
+  </p>
+  <p class="hero-byline">Built by <strong>Ankita Pal</strong> aka <span class="accent">@popsicle_guy</span>, as part of an application for the Senior ML Engineer role.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">TRAITS</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">ARCHETYPES</div></div>
+    <div class="stat"><div class="stat-num">Stockfish 16</div><div class="stat-label">ENGINE</div></div>
+    <div class="stat"><div class="stat-num">PGN or User</div><div class="stat-label">INPUT</div></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#demo" class="btn-primary">RUN THE DEMO &rsaquo;</a>
+    <a href="#methodology" class="btn-secondary">&lt;/&gt; SEE METHODOLOGY</a>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="section" id="demo">
+  <div class="section-tag">// 01 · INPUT</div>
+  <h2 class="section-title">Feed the lab a player.</h2>
+  <p class="section-sub">Drop a Chess.com username and we'll pull their latest games via the public API. Or paste a PGN dump directly — the parser handles multi-game files.</p>
+  <ul class="hints">
+    <li>&rsaquo; 14–30 games is the sweet spot.</li>
+    <li>&rsaquo; Anything older than 6 months gets fuzzy.</li>
+    <li>&rsaquo; The model is heuristic + clustering — no engine eval yet.</li>
+  </ul>
+
+  <div class="demo-card">
+    <div class="tab-row">
+      <button class="tab active" id="tab-user" onclick="switchTab('user')">CHESS.COM USERNAME</button>
+      <button class="tab" id="tab-pgn" onclick="switchTab('pgn')">PASTE PGN</button>
+    </div>
+
+    <div id="input-user" class="tab-content active">
+      <label class="field-label">USERNAME</label>
+      <input type="text" class="field-input" id="username-input" value="popsicle_guy" placeholder="e.g. hikaru" />
+      <label class="field-label">MAX_GAMES · <span id="games-val">20</span></label>
+      <input type="range" class="slider" id="games-slider" min="5" max="50" value="20" oninput="document.getElementById('games-val').textContent=this.value" />
+    </div>
+
+    <div id="input-pgn" class="tab-content">
+      <label class="field-label">PGN DATA</label>
+      <textarea class="field-input pgn-area" id="pgn-input" placeholder="[Event &quot;Live Chess&quot;]&#10;[Site &quot;Chess.com&quot;]&#10;...paste your PGN here"></textarea>
+    </div>
+
+    <div class="demo-footer">
+      <span class="endpoint">POST /api/analyze</span>
+      <button class="btn-generate" id="gen-btn" onclick="runDemo()">✦ GENERATE BOT</button>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-area" id="output-area" style="display:none">
+    <div class="output-header">
+      <span class="output-tag">// 02 · OUTPUT</span>
+      <span class="status-dot"></span><span class="status-text">ANALYSIS COMPLETE</span>
+    </div>
+
+    <div class="output-grid">
+      <!-- Archetype -->
+      <div class="out-card archetype-card">
+        <div class="out-label">ARCHETYPE</div>
+        <div class="archetype-name" id="archetype-name">—</div>
+        <div class="archetype-desc" id="archetype-desc">—</div>
+        <div class="archetype-conf">
+          CONFIDENCE: <span id="archetype-conf">—</span>
+        </div>
+      </div>
+
+      <!-- Trait Bars -->
+      <div class="out-card trait-card">
+        <div class="out-label">PERSONALITY VECTOR (8-dim)</div>
+        <div class="traits" id="trait-bars"></div>
+      </div>
+
+      <!-- Bot Spec -->
+      <div class="out-card spec-card">
+        <div class="out-label">STOCKFISH BOT SPEC</div>
+        <div class="spec-grid" id="spec-grid"></div>
+      </div>
+    </div>
+
+    <div class="json-block">
+      <div class="json-label">// bot_spec.json</div>
+      <pre id="json-out"></pre>
+    </div>
+  </div>
+
+  <div id="loading" style="display:none" class="loading-block">
+    <span class="loading-text">// analysing games<span class="blink">_</span></span>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="section" id="methodology">
+  <div class="section-tag">// 03 · METHODOLOGY</div>
+  <h2 class="section-title">The pipeline, in plain sight.</h2>
+  <p class="section-sub">Every step is intentionally explainable. No black boxes — yet.</p>
+
+  <div class="pipeline-flow">
+    <div class="flow-node top-node">chess.com /pub/player/{user}/games &nbsp;&nbsp;&nbsp;&nbsp; PGN file</div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-node">[ python-chess parser ]</div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-node">per-game heuristic metrics</div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-node">normalise → 8-dim trait vector ∈ [0,1]</div>
+    <div class="flow-split">
+      <div class="split-branch">
+        <div class="flow-arrow">▼</div>
+        <div class="flow-node">nearest-centroid cluster</div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-node accent-node">ARCHETYPE</div>
+      </div>
+      <div class="split-branch">
+        <div class="flow-arrow">▼</div>
+        <div class="flow-node">param-mapping function</div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-node accent-node">STOCKFISH BOT SPEC<br/><small>skill / depth / contempt<br/>move-bias vector<br/>blunder injection prob</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-num">01</div>
+      <h3>PGN ingestion</h3>
+      <p>Pull last N games via Chess.com's public archives API, or accept a raw PGN dump. python-chess parses the mainline into board states + move metadata.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-num">02</div>
+      <h3>Heuristic feature extraction</h3>
+      <p>Per-game: captures, checks, sacrifice ratio (capturer &gt; captured), early-queen moves, castling speed, central pawn pushes, minor-piece development, longest material swing, endgame reach + result, opening (ECO) diversity, time-control base.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-num">03</div>
+      <h3>Trait normalisation</h3>
+      <p>Raw stats compose into 8 traits in [0,1]: aggression, tactical vision, positional play, time mgmt, opening diversity, endgame strength, risk tolerance, blunder resistance.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-num">04</div>
+      <h3>Nearest-centroid clustering</h3>
+      <p>8 hand-seeded archetype centroids (Tactical Tornado, Patient Strategist, Endgame Surgeon…). The player's trait vector is matched by Euclidean distance — distance → confidence.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-num">05</div>
+      <h3>Bot spec generation</h3>
+      <p>Trait vector maps to Stockfish runtime params: skill_level, search_depth, contempt, move_time, blunder injection probability, opening-book width, time-trouble behaviour, and a 6-dim move-selection bias vector (captures / checks / sacs / quiet / simplification / theory).</p>
+    </div>
+    <div class="method-card accent-method">
+      <div class="method-num">06</div>
+      <h3>What's next</h3>
+      <p>Plug Stockfish + the bias vector into a move-sampler (top-k softmax over engine PVs weighted by bias). Add engine-eval-based blunder labelling for true tactical_vision. Train an embedding head on millions of users to replace hand-seeded centroids.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about-section" id="about">
+  <div class="section-tag">// 04 · WHY</div>
+  <h2 class="section-title">A late-night Reddit rabbit hole,<br/>turned prototype.</h2>
+
+  <div class="about-text">
+    <p>I'm <strong>Ankita Pal</strong>, @popsicle_guy on Chess.com. ML engineer with a Masters in AI/ML (2025). Chess is literally the reason I picked the degree.</p>
+    <p>Last Christmas I saw the <a href="https://www.chess.com" target="_blank" class="inline-link">Chess.com 2025 Wrapped</a> posted on Reddit and it clicked: if you can fingerprint a player's <em>style</em> from their PGNs, you can encode that fingerprint into a bot. A bot that <em>feels</em> like a real opponent, not just a slider on a skill bar.</p>
+    <p>Then I saw <a href="https://www.reddit.com" target="_blank" class="inline-link">Vinay Bhat's announcement</a> of Chess.com's new AI org and the 3rd 2026 focus area. Same idea. So I built this.</p>
+    <p class="faded">This is v0.1. The fingerprint is real, the bot-spec is real (Stockfish + bias vector). Wiring the bias into a live move-sampler is the next weekend.</p>
+  </div>
+
+  <div class="about-links">
+    <a href="https://github.com/0xafraidoftime" target="_blank" class="about-btn">⑂ GITHUB</a>
+    <a href="https://www.linkedin.com/in/ankita-pal-70a269157/" target="_blank" class="about-btn">in LINKEDIN</a>
+    <a href="https://x.com/afraidoftime_" target="_blank" class="about-btn">𝕏 TWITTER</a>
+    <a href="https://www.chess.com/member/popsicle_guy" target="_blank" class="about-btn accent-btn">♟ @POPSICLE_GUY</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>popsicle-bot-lab · v0.1 · open-source</span>
+  <span>built by Ankita Pal for Chess.com Senior ML Engineer application</span>
+</footer>
+
+<script src="js/demo.js"></script>
+</body>
+</html>

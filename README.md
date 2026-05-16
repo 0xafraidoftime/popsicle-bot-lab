@@ -6,7 +6,7 @@
 
 Now you might ask "why popsicle bot lab? why not chess human exterminator?"
 
-I'm here to tell you that's a valid question. So I decided to name this repo "popsicle-bot-lab" cuz that's me on chess.com
+And that's a valid question. I decided to name this repo "popsicle-bot-lab" cuz that's me (or my account) on chess.com
 
 ![alt text](images/popsicle_guy.png)
 

@@ -4,6 +4,12 @@
 
 **[Live Demo →](https://0xafraidoftime.github.io/popsicle-bot-lab)**
 
+Now you might ask "why popsicle bot lab? why not chess human exterminator?"
+
+I'm here to tell you that's a valid question. So I decided to name this repo "popsicle-bot-lab" cuz that's me on chess.com
+
+![alt text](images/popsicle_guy.png)
+
 An open prototype for Chess.com's 3rd 2026 AI focus area — mapping a player's historical PGN data to a personality vector, then encoding that vector into a Stockfish-driven bot spec.
 
 Built by **Ankita Pal** aka [@popsicle_guy](https://www.chess.com/member/popsicle_guy)
